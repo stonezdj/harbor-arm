@@ -21,15 +21,11 @@
 #
 # _update_make_photon_makefile:  replace goharbor/harbor's photon makefile.
 #
-# _update_chartserver:           replace goharbor/harbor's chartserver 
-#
 # _update_registry:              replace goharbor/harbor's registry
 #
 # _update_trivy-adapter:         replace goharbor/harbor's trivy-adapter
 #
 # _update_portal:                replace goharbor/harbor's portal 
-#
-# _update_notary:                replace goharbor/harbor's notary
 # 
 # pre_update: 
 #
@@ -59,7 +55,7 @@ HARBOR_PUSHIMAGE_PATH=$(BUILDPATH)/make/pushimage.sh
 # download goharbor/harbor parammeters
 HARBOR_SOURCE_URL=https://github.com/goharbor/harbor.git
 SRCPATH=src/github.com/goharbor/harbor
-HARBOR_TAG=release-2.3.0
+HARBOR_TAG=release-2.9.0
 
 # makefile path
 MAKEPATH=$(BUILDPATH)/make
@@ -121,10 +117,6 @@ _update_make_photon_makefile:
 	@$(SEDCMDI) 's/$(DOCKERCMD) build/$(DOCKERCMD) buildx build --platform linux\/arm64 --progress plain --output=type=docker/' $(HARBOR_PHOTON_MAKEFILE_PATH)
 	@$(SEDCMDI) '219 a \ \ \ \ \ \ \ \ docker buildx prune -f ; \\' $(HARBOR_PHOTON_MAKEFILE_PATH)
 
-_update_chartserver:
-	@echo "update goharbor chartserver compile.sh"
-	@$(SEDCMDI) 's/go build -a/GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -a/g' $(HARBOR_PHOTON_CHARTSERVER_COMPILE_PATH)
-
 _update_registry:
 	@echo "update goharbor registry Dockerfile.binary"
 	@$(SEDCMDI) 's/CGO_ENABLED=0/GOOS=linux GOARCH=arm64 CGO_ENABLED=0/g' $(HARBOR_PHOTON_REGISTRY_DOCKERFILE_PATH)
@@ -138,12 +130,6 @@ _update_portal:
 	@$(SEDCMDI) 's/node:15.4.0/--platform=$${BUILDPLATFORM:-linux\/amd64} node:15.4.0/g' $(HARBOR_PHOTON_PORTAL_DOCKERFILE_PATH);
 	@$(SEDCMDI) "s/'node_modules\/@angular\/cli\/bin\/ng'/.\/node_modules\/@angular\/cli\/bin\/ng/g" $(HARBOR_PHOTON_PORTAL_DOCKERFILE_PATH)
 
-_update_notary:
-	@echo "update goharbor notary binary.Dockerfile"
-	@$(SEDCMDI) '8 a ENV CGO_ENABLED 0 \nENV GOOS linux \nENV GOARCH arm64' $(HARBOR_PHOTON_NOTARY_DOCKERFILE_PATH)
-	@echo "update goharbor notary builder"
-	@$(SEDCMDI)	's/docker build/docker buildx build --platform linux\/arm64 --progress plain --output=type=docker/g' $(HARBOR_PHOTON_NOTARY_BUILDER_PATH)
-
 _update_exporter:
 	@echo "update goharbor exporter Dockerfile"
 	@$(SEDCMDI) 's/ENV GOARCH=amd64/ENV GOARCH=arm64/g' $(HARBOR_PHOTON_EXPORTER_PATH)
@@ -151,7 +137,7 @@ _update_exporter:
 
 
 
-pre_update: _update_makefile _update_make_photon_makefile _update_chartserver _update_registry _update_trivy-adapter _update_notary _update_portal _update_exporter
+pre_update: _update_makefile _update_make_photon_makefile _update_registry _update_trivy-adapter _update_portal _update_exporter
 
 # downlaod goharbor/harbor source code
 download:
