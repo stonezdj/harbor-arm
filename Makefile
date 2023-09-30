@@ -115,7 +115,6 @@ _update_makefile:
 _update_make_photon_makefile:
 	@echo "update goharbor photon makefile"
 	@$(SEDCMDI) 's/$(DOCKERCMD) build/$(DOCKERCMD) buildx build --platform linux\/arm64 --progress plain --output=type=docker/' $(HARBOR_PHOTON_MAKEFILE_PATH)
-	@$(SEDCMDI) '219 a \ \ \ \ \ \ \ \ docker buildx prune -f ; \\' $(HARBOR_PHOTON_MAKEFILE_PATH)
 
 _update_registry:
 	@echo "update goharbor registry Dockerfile.binary"
@@ -160,14 +159,14 @@ compile_redis:
 	
 
 compile: 
-	cd $(SRCPATH) && make -f Makefile $(MAKE_COMPILE)
+	cd $(SRCPATH) && make -f Makefile $(MAKE_COMPILE) -e COMPILETAG=compile_golangimage
 
 build_base_image: 
 	cd $(SRCPATH) && make -f Makefile $(MAKE_BUILD_BASE) \
 	 -e BASEIMAGETAG=$(BASEIMAGETAG) -e BASEIMAGENAMESPACE=$(BASEIMAGENAMESPACE)  \
 	 -e REGISTRYUSER=$(REGISTRYUSER) -e REGISTRYPASSWORD=$(REGISTRYPASSWORD) -e BUILD_PG96=$(BUILD_PG96)
 
-package_online:
+install_package:
 	cd $(SRCPATH) && make -f Makefile $(MAKE_ONLINE)
 
 .PHONY: build
@@ -175,5 +174,16 @@ build:
 	@echo "build harbor-arm image"
 	cd $(SRCPATH) && make -f Makefile $(MAKE_BUILD) -e DEVFLAG=$(DEVFLAG) \
 	 -e REGISTRYUSER=$(REGISTRYUSER) -e REGISTRYPASSWORD=$(REGISTRYPASSWOR) \
-	 -e PULL_BASE_FROM_DOCKERHUB=$(PULL_BASE_FROM_DOCKERHUB) \
-	 -e BUILD_BASE=$(BUILD_BASE) -e VERSIONTAG=$(VERSIONTAG)
+	 -e PULL_BASE_FROM_DOCKERHUB=false \
+	 -e BUILD_BASE=$(BUILD_BASE) -e VERSIONTAG=$(VERSIONTAG) \
+	 -e GOBUILDTAGS="include_oss include_gcs" \
+	 -e BUILDBIN=true -e TRIVYFLAG=true -e GEN_TLS=true 
+
+clean:
+	@echo "clean all generated files"
+	rm -rf $(SRCPATH)
+	rm -rf redis/*.rpm
+	docker image prune -af
+
+
+all: clean download compile_redis prepare_arm_data pre_update compile build install_package

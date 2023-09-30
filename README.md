@@ -14,30 +14,38 @@ Before you build the harbor arm image, you need to check if your local environme
 By running the command `docker buildx ls`，If the result shows `linux/arm64`, it proves that the arm image can be built
 
 ## Get Started
+
+1. Install git, make, docker, docker-compose
+
+2. Clone Harbor ARM code
 ```
-# first step: clone harbor ARM code
 git clone https://github.com/goharbor/harbor-arm.git
+```
 
-# execute build command：Download harbor source code
-cd harbor-arm && make download
-
-# compile redis:
-make compile_redis
-
-# Prepare to build arm architecture image data:
-make prepare_arm_data
-
-# Replace build arm image parameters：
-make pre_update
-
-# Compile harbor components:
-make compile COMPILETAG=compile_golangimage
-
-# Build harbor arm image:
-make build GOBUILDTAGS="include_oss include_gcs" BUILDBIN=true NOTARYFLAG=true TRIVYFLAG=true CHARTFLAG=true GEN_TLS=true PULL_BASE_FROM_DOCKERHUB=false
-
+3. Build online package
 
 ```
+cd harbor-arm 
+make all
+```
+
+4. Copy the online installer package to the installation directory
+
+```
+mkdir -p ~/harbor_latest
+cp harbor-online-installer-dev-arm.tgz ~/harbor_latest
+```
+
+5. Extract the install package and install Harbor
+```
+cd ~/harbor_latest
+tar xvf harbor-online-installer-dev-arm.tgz
+cd harbor
+# Generate cert and create the harbor.yml file
+./install.sh --with-trivy
+```
+
+After installation, then visit the Harbor via URL: https://<Harbor_fqdn>
 
 
 
