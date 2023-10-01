@@ -169,6 +169,9 @@ build_base_image:
 install_package:
 	cd $(SRCPATH) && make -f Makefile $(MAKE_ONLINE)
 
+offline_package:
+	cd $(SRCPATH) && make -f Makefile $(MAKE_OFFLINE)
+
 .PHONY: build
 build: 
 	@echo "build harbor-arm image"
@@ -186,4 +189,4 @@ clean:
 	docker image prune -af
 
 
-all: clean download compile_redis prepare_arm_data pre_update compile build install_package
+all: clean download compile_redis prepare_arm_data pre_update compile build install_package offline_package
