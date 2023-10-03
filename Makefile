@@ -80,7 +80,7 @@ HARBORPKG=harbor-arm
 
 
 # for docker image tag
-VERSIONTAG=dev-arm
+VERSIONTAG=v2.9.0-arm
 BASEIMAGETAG=dev-arm
 BUILD_BASE=true
 PUSHBASEIMAGE=false
@@ -107,7 +107,7 @@ _update_makefile:
 	@$(SEDCMDI) 's/gen_apis: lint_apis/gen_apis:/g' $(HARBOR_MAKEFILE_PATH);
 	@$(SEDCMDI) 's/_Linux-64bit.tar.gz/_Linux-ARM64.tar.gz/g' $(HARBOR_MAKEFILE_PATH);
 	@$(SEDCMDI) 's/_Linux_x86_64.tar.gz/_Linux_arm64.tar.gz/g' $(HARBOR_MAKEFILE_PATH);
-	@$(SEDCMDI) 's/VERSIONTAG=dev/VERSIONTAG=dev-arm/g' $(HARBOR_MAKEFILE_PATH);
+	@$(SEDCMDI) 's/VERSIONTAG=dev/VERSIONTAG=v2.9.0-arm/g' $(HARBOR_MAKEFILE_PATH);
 	@$(SEDCMDI) 's/BASEIMAGETAG=dev/BASEIMAGETAG=dev-arm/g' $(HARBOR_MAKEFILE_PATH);
 	@$(SEDCMDI) 's/BUILD_PG96=true/BUILD_PG96=false/g' $(HARBOR_MAKEFILE_PATH);
 	
